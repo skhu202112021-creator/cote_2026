@@ -33,9 +33,9 @@ class programmers_42579 {
 	    for (int i = 0; i < genres.length; ++i) {
 	    	array[i] = genres[map.get(plays[i])];
 	    }
-	    int sum = 0;
+	    int sum = 0; boolean access = false;
 	    for (int i = 0; i < set.size(); ++i) {
-	    	for(int j = 0; j <array.length; ++j) {
+	    	for(int j = 0; j < array.length; ++j) {
 	    		if (set.toArray()[i].equals(array[j])) {
 	    			sum += plays[j];
 	    		}
@@ -43,36 +43,79 @@ class programmers_42579 {
 	    	sums.put(set.toArray()[i].toString(), sum);
 	    	sum = 0;
 	    }
+	    count = 0; int num = plays[0];
+	    for(int p : plays) {
+	    	if(num == p) {
+	    		count++;
+	    		num = p;
+	    	}
+	    }
+	    if(count <= plays.length && count > 1) {
+    		access = true;
+    	}
 	    String tempGenre = ""; int tempPlay = 0;
 	    List<Integer> list = new ArrayList<>();
 	    List<String> keyList = new ArrayList<>(sums.keySet());
         keyList.sort((o1, o2) -> sums.get(o1).compareTo(sums.get(o2)));
-	    int index = 0, length = sums.size()*2; count = 0;
-	    for(int i = keyList.size() - 1; i >= 0; --i) {
-	    	for(int j = array.length - 1; j >= 0; --j) {
-	    		if(sums.get(keyList.get(i)) == plays[j]) {
-	    			length--;
-	    		}
-	    		if(index != length && count != 2 && !sort.containsKey(keyList.get(i))) {
-		    		if(keyList.get(i).equals(array[j]) && map.get(plays[j]) != null) {
-		    			list.add(index,map.get(plays[j]));
-		    			System.out.print(map.get(plays[j]));
-		    			map.put(plays[j], null);
-		    			index++; count++;
-		    		}
-	    		}
-	    		tempGenre = array[i]; tempPlay = plays[i];
-	    	}
-	    	if(tempGenre.equals(array[i]) && tempPlay == plays[i] && sort.containsKey(keyList.get(i))) {
-	    		for(int j = 0; j < sort.get(keyList.get(i)).size(); ++j) {
-	    			list.add(sort.get(keyList.get(i)).get(j));
-	    		}
-    			map.put(plays[i], null);
-	    	}
+	    int index = 0, length = sums.size()*2;
+	    if(access == false) {
 	    	count = 0;
+		    for(int i = keyList.size() - 1; i >= 0; --i) {
+		    	for(int j = array.length - 1; j >= 0; --j) {
+		    		if(sums.get(keyList.get(i)) == plays[j]) {
+		    			length--;
+		    		}
+		    		if(index != length && count != 2 && !sort.containsKey(keyList.get(i))) {
+			    		if(keyList.get(i).equals(array[j]) && map.get(plays[j]) != null) {
+			    			list.add(index,map.get(plays[j]));
+			    			map.put(plays[j], null);
+			    			index++; count++;
+			    		}
+		    		}
+		    		tempGenre = array[i]; tempPlay = plays[i];
+		    	}
+		    	if(tempGenre.equals(array[i]) && tempPlay == plays[i] && sort.containsKey(keyList.get(i))) {
+		    		for(int j = 0; j < sort.get(keyList.get(i)).size(); ++j) {
+		    			list.add(sort.get(keyList.get(i)).get(j));
+		    		}
+	    			map.put(plays[i], null);
+		    	}
+		    	count = 0;
+		    }
+		    Integer [] answerInt = list.toArray(new Integer[list.size()]);
+		    answer = Arrays.stream(answerInt).mapToInt(Integer::intValue).toArray();
+		    return answer;
 	    }
-	    Integer [] answerInt = list.toArray(new Integer[list.size()]);
-	    answer = Arrays.stream(answerInt).mapToInt(Integer::intValue).toArray();
-	    return answer;
+	    else {
+	    	if(count == plays.length) {
+	    		count = 0;
+	    		for(int i = 0; i < set.size(); ++i) {
+		    		count = 0;
+		    		for(int j = 0; j < genres.length; ++j) {
+		    			if(keyList.get(i).equals(genres[j]) && count < 2) {
+		    				list.add(j); count++;
+		    			}
+		    		}
+		    	}
+	    	}
+	    	else {
+		    	for(int i = keyList.size() - 1; i >= 0; --i) {
+		    		count = 0;
+		    		for(int j = 0; j < genres.length; ++j) {
+		    			if(keyList.get(i).equals(genres[j]) && count < 2) {
+		    				list.add(j); count++;
+		    			}
+		    		}
+		    	}
+	    	}
+	    	Integer [] answerInt = list.toArray(new Integer[list.size()]);
+		    answer = Arrays.stream(answerInt).mapToInt(Integer::intValue).toArray();
+		    return answer;
+	    }
+    }
+    public static void main(String[] args) {
+    	String [] genres = {"classic", "pop", "classic", "pop", "pop", "pop", "classic", "jazz"};
+    	int [] plays = {1000, 500, 1001, 100, 300, 400, 1002, 50000};
+    	System.out.println(Arrays.toString(solution(genres, plays)));
     }
 }
