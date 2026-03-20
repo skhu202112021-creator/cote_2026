@@ -113,9 +113,4 @@ class programmers_42579 {
 		    return answer;
 	    }
     }
-    public static void main(String[] args) {
-    	String [] genres = {"classic", "pop", "classic", "pop", "pop", "pop", "classic", "jazz"};
-    	int [] plays = {1000, 500, 1001, 100, 300, 400, 1002, 50000};
-    	System.out.println(Arrays.toString(solution(genres, plays)));
-    }
 }
