@@ -50,16 +50,15 @@ class programmers_42579 {
 	    		num = p;
 	    	}
 	    }
-	    if(count <= plays.length && count > 1) {
+	    if(count == plays.length) {
     		access = true;
     	}
 	    String tempGenre = ""; int tempPlay = 0;
 	    List<Integer> list = new ArrayList<>();
 	    List<String> keyList = new ArrayList<>(sums.keySet());
         keyList.sort((o1, o2) -> sums.get(o1).compareTo(sums.get(o2)));
-	    int index = 0, length = sums.size()*2;
+	    int index = 0, length = sums.size()*2; count = 0;
 	    if(access == false) {
-	    	count = 0;
 		    for(int i = keyList.size() - 1; i >= 0; --i) {
 		    	for(int j = array.length - 1; j >= 0; --j) {
 		    		if(sums.get(keyList.get(i)) == plays[j]) {
@@ -87,26 +86,13 @@ class programmers_42579 {
 		    return answer;
 	    }
 	    else {
-	    	if(count == plays.length) {
+	    	for(int i = 0; i < keyList.size(); ++i) {
 	    		count = 0;
-	    		for(int i = 0; i < set.size(); ++i) {
-		    		count = 0;
-		    		for(int j = 0; j < genres.length; ++j) {
-		    			if(keyList.get(i).equals(genres[j]) && count < 2) {
-		    				list.add(j); count++;
-		    			}
-		    		}
-		    	}
-	    	}
-	    	else {
-		    	for(int i = keyList.size() - 1; i >= 0; --i) {
-		    		count = 0;
-		    		for(int j = 0; j < genres.length; ++j) {
-		    			if(keyList.get(i).equals(genres[j]) && count < 2) {
-		    				list.add(j); count++;
-		    			}
-		    		}
-		    	}
+	    		for(int j = 0; j < genres.length; ++j) {
+	    			if(keyList.get(i).equals(genres[j]) && count < 2) {
+	    				list.add(j); count++;
+	    			}
+	    		}
 	    	}
 	    	Integer [] answerInt = list.toArray(new Integer[list.size()]);
 		    answer = Arrays.stream(answerInt).mapToInt(Integer::intValue).toArray();
