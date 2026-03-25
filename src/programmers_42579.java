@@ -6,97 +6,84 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-class programmers_42579 {
+class programmers_42579{
     public static int[] solution(String[] genres, int[] plays) {
-        Map<Integer, Integer> map = new HashMap<>();
-        Map<String, List<Integer>> sort = new HashMap<>();
+    	int [] index = new int[genres.length];
         Map<String, Integer> sums = new HashMap<>();
         Set<String> set = new HashSet<>();
-        String [] array = new String[genres.length];
-        int[] answer = {}; int count = 0; String temp = "";
+        int[] answer = {}; int count = 0;
+        String [] copyGenres = genres.clone();
+        int [] copyPlays = plays.clone();
 	    for (int i = 0; i < genres.length; ++i) {
 	    	set.add(genres[i]);
-	    	if(map.containsKey(plays[i]) && !genres[i].equals(temp)) {
-	    		if(!sort.containsKey(genres[i])) {
-	    			sort.put(genres[i], new ArrayList<>());
-	    		}
-	    		sort.get(genres[i]).add(map.get(plays[i]));
-	    		sort.get(genres[i]).add(i);
-	    		count++;
-	    		temp = genres[i];
-	    		System.out.print(genres[i]);
-	    		System.out.println(sort.get(genres[i]).toString());
-	    	}
-	    	map.put(plays[i], i);
-    	}
-	    Arrays.sort(plays);
-	    for (int i = 0; i < genres.length; ++i) {
-	    	array[i] = genres[map.get(plays[i])];
+	    	index[i] = i;
 	    }
-	    int sum = 0; boolean access = false;
+	    /*적합한 정렬 알고리즘을 생각하던 중 버블 정렬이 떠올라 사용함.
+	     람다 함수를 이용하면 간단하게 코드 작성 가능.*/
+	    for (int i = 0; i < genres.length; ++i) {
+	    	for (int j = 1; j < genres.length - i; ++j) {
+		    	if(plays[j] > plays[j - 1]) {
+		    		int temp = plays[j - 1];
+		    		plays[j - 1] = plays[j];
+		    		plays[j] = temp;
+		    		int tempI = index[j - 1];
+		    		index[j - 1] = index[j];
+		    		index[j] = tempI;
+		    		String tempStr = genres[j - 1];
+		    		genres[j - 1] = genres[j];
+		    		genres[j] = tempStr;
+		    	}
+	    	}
+	    }
+	    int sum = 0; count = 0; boolean access = false; String temp = ""; int tmpj = 0;
 	    for (int i = 0; i < set.size(); ++i) {
-	    	for(int j = 0; j < array.length; ++j) {
-	    		if (set.toArray()[i].equals(array[j])) {
-	    			sum += plays[j];
+	    	count = 0;
+	    	for(int j = 0; j < copyGenres.length; ++j) {
+	    		if (set.toArray()[i].equals(copyGenres[j])) {
+	    			sum += copyPlays[j];
+	    			count++;
+	    			tmpj = j;
 	    		}
+	    	}
+	    	//총합이 같은 장르가 존재하고 장르에 속한 곡이 1개면 저장함.
+	    	if(sums.containsValue(sum) && count == 1) {
+	    		access = true;
+	    		temp = copyGenres[tmpj];
 	    	}
 	    	sums.put(set.toArray()[i].toString(), sum);
 	    	sum = 0;
 	    }
-	    count = 0; int num = plays[0];
-	    for(int p : plays) {
-	    	if(num == p) {
-	    		count++;
-	    		num = p;
-	    	}
-	    }
-	    if(count == plays.length) {
-    		access = true;
-    	}
-	    String tempGenre = ""; int tempPlay = 0;
 	    List<Integer> list = new ArrayList<>();
 	    List<String> keyList = new ArrayList<>(sums.keySet());
-        keyList.sort((o1, o2) -> sums.get(o1).compareTo(sums.get(o2)));
-	    int index = 0, length = sums.size()*2; count = 0;
-	    if(access == false) {
-		    for(int i = keyList.size() - 1; i >= 0; --i) {
-		    	for(int j = array.length - 1; j >= 0; --j) {
-		    		if(sums.get(keyList.get(i)) == plays[j]) {
-		    			length--;
+        keyList.sort((o1, o2) -> sums.get(o2) - sums.get(o1));
+        int length = sums.size()*2; count = 0; int repeat = -1;
+        int resultIndex = 0;
+        //저장해둔 값 맨 앞에 추가.
+        if(access == true) {
+			if(genres[0].equals(temp)) {
+				list.add(index[0]);
+				repeat = index[0];
+			}
+        }
+	    for(int i = 0; i < keyList.size(); ++i) {
+	    	for(int j = 0; j < index.length; ++j) {
+	    		if(resultIndex != length && count != 2) {
+		    		if(keyList.get(i).equals(genres[j])) {
+		    			if(sums.get(keyList.get(i)) == plays[j] && !list.contains(index[j])) {
+		 					repeat = index[j];
+		 					list.add(index[j]);
+		 				}
+		    			if(repeat != index[j]) {
+		    				list.add(index[j]);
+		    				resultIndex++; count++;
+		    			}
 		    		}
-		    		if(index != length && count != 2 && !sort.containsKey(keyList.get(i))) {
-			    		if(keyList.get(i).equals(array[j]) && map.get(plays[j]) != null) {
-			    			list.add(index,map.get(plays[j]));
-			    			map.put(plays[j], null);
-			    			index++; count++;
-			    		}
-		    		}
-		    		tempGenre = array[i]; tempPlay = plays[i];
-		    	}
-		    	if(tempGenre.equals(array[i]) && tempPlay == plays[i] && sort.containsKey(keyList.get(i))) {
-		    		for(int j = 0; j < sort.get(keyList.get(i)).size(); ++j) {
-		    			list.add(sort.get(keyList.get(i)).get(j));
-		    		}
-	    			map.put(plays[i], null);
-		    	}
-		    	count = 0;
-		    }
-		    Integer [] answerInt = list.toArray(new Integer[list.size()]);
-		    answer = Arrays.stream(answerInt).mapToInt(Integer::intValue).toArray();
-		    return answer;
-	    }
-	    else {
-	    	for(int i = 0; i < keyList.size(); ++i) {
-	    		count = 0;
-	    		for(int j = 0; j < genres.length; ++j) {
-	    			if(keyList.get(i).equals(genres[j]) && count < 2) {
-	    				list.add(j); count++;
-	    			}
 	    		}
 	    	}
-	    	Integer [] answerInt = list.toArray(new Integer[list.size()]);
-		    answer = Arrays.stream(answerInt).mapToInt(Integer::intValue).toArray();
-		    return answer;
+	    	count = 0;
 	    }
+	    Integer [] answerInt = list.toArray(new Integer[list.size()]);
+	    answer = Arrays.stream(answerInt).mapToInt(Integer::intValue).toArray();
+	    return answer;
     }
 }
