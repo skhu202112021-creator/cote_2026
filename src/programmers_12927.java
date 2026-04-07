@@ -1,7 +1,7 @@
 import java.util.Arrays;
 
-class Solution {
-	public static long programmers_12927(int n, int[] works) {
+class programmers_12927 {
+	public static long solution(int n, int[] works) {
 		long answer = 0;
 		int max = 0;
 		int index = works.length - 1;
