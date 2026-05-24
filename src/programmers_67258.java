@@ -1,38 +1,40 @@
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-class programmers_67258 {
-    public static int[] solution(String[] gems) {
-        int[] answer = new int [2];
-        int sum = 0, count = 0, write = 0;
-        Set<String> s = new HashSet<>();
-        Map<String, Integer> h = new HashMap<>();
-        for(int i = 0; i < gems.length; ++i) {
-        	sum = 0; count = 0;
-        	for(String gem : gems) {
-            	s.add(gem);
-            }
-        	for(String gem : s) {
-        		h.put(gem, 0);
-        	}
-        	for(int j = i; j < gems.length; ++j) {
-        		count++;
-            	h.put(gems[j], h.get(gems[j]) + 1);
-            	if(h.get(gems[j]) == 1) {
-            		sum++;
-            	}
-        		if(sum == h.size()) {
-            		if(write > count || write == 0) {
-            			answer[0] = i + 1;
-            			answer[1] = j + 1;
-            			write = count;
-            		}
-            		j = gems.length;
-            	}
+class Solution {
+    public int[] solution(String[] gems) {
+        // 1. 보석의 총 종류 수 계산
+        int totalKind = new HashSet<>(Arrays.asList(gems)).size();
+        
+        // 2. 결과 저장용 변수
+        int[] answer = new int[2];
+        int minLength = Integer.MAX_VALUE;
+        
+        // 3. 구간을 관리할 Map과 포인터
+        Map<String, Integer> map = new HashMap<>();
+        int start = 0;
+        
+        for (int end = 0; end < gems.length; end++) {
+            // 오른쪽 포인터(end)를 이동하며 보석 추가
+            map.put(gems[end], map.getOrDefault(gems[end], 0) + 1);
+            
+            // 모든 종류를 다 모았다면, 왼쪽 포인터(start)를 줄여가며 최소 구간 탐색
+            while (map.size() == totalKind) {
+                // 현재 구간이 더 짧다면 갱신
+                if (end - start < minLength) {
+                    minLength = end - start;
+                    answer[0] = start + 1;
+                    answer[1] = end + 1;
+                }
+                
+                // start 쪽 보석 제거
+                map.put(gems[start], map.get(gems[start]) - 1);
+                if (map.get(gems[start]) == 0) {
+                    map.remove(gems[start]); // 0개가 되면 종류 수에서 제외되도록 삭제
+                }
+                start++;
             }
         }
+        
         return answer;
     }
 }
