@@ -1,72 +1,46 @@
-class programmers_67258 {
-	static int N = 0, end1 = 0, end2 = 0, result = Integer.MAX_VALUE, index = 1;
-	static int l = 0;
-	static int[] temp;
-	static int sum1 = 0;
-	static int sum2 = 0;
+import java.util.*;
 
-	public static void dfs(int index, int[][] tree, int[][] info) {
-		if (index >= tree.length) {
+public class programmers_389480 {
+	static int N, R, M; static int index = 0;
+	static int[][] A;
+	static List<Integer> selected = new ArrayList<>();
+	static int[] NM = new int[2]; static int answer = Integer.MAX_VALUE;
+
+	static void DFS(int e){
+		selected.add(e);
+		index++;
+		if (selected.size() == R) {
+			if(NM[0] < N && NM[1] < M) {
+				answer = Math.min(answer, NM[0]);
+			}
+			index--;
 			return;
 		}
-		if(temp[N-1] != 0) {
-			if(tree[index-1][2] == 0) {
-				sum1 -= tree[index-1][0];
-			}
-			else {
-				sum2 -= tree[index-1][0];
-			}
-		}
-		temp[tree[index][1]] = tree[index][0];
-		if(tree[index][2] == 0) {
-			sum1 += tree[index][0];
-		}
-		else {
-			sum2 += tree[index][0];
-		}
-		if(sum1 < end1 && sum2 < end2) {
-			if(result > sum1 && temp[N-1] != 0) {
-				result = sum1;
-			}
-		}
-		dfs(2 * index + 1, tree, info);
-		dfs(2 * index + 2, tree, info);
+		NM[0] += A[index][0];
+		DFS(A[index][0]);
+		NM[0] -= A[index][0];
+		selected.remove(selected.size() - 1);
+		NM[1] += A[index][1];
+		DFS(A[index][1]);
+		NM[1] -= A[index][1];
+		selected.remove(selected.size() - 1);
+		index--;
 	}
 
-	public static int solution(int[][] info, int n, int m) {
-		N = info.length; temp = new int[N];
-		end1 = n;
-		end2 = m;
-		for (int i = 1; i <= N; i++) {
-			index += Math.pow(2, i);
-		}
-		int[][] tree1 = new int[index][3];
-
-		int k = 0;
-		l = 1;
-		int p = 1;
-		tree1[0][0] = 0;
-		for (int i = 1; i < index; i += 2) {
-			p *= 2;
-			if (i == 1)
-				p = 1;
-			for (int j = 0; j < p; j++) {
-				tree1[l][0] = info[k][0];
-				tree1[l][1] = k;
-				l++;
-				tree1[l][0] = info[k][1];
-				tree1[l][2] = 1;
-				tree1[l][1] = k;
-				l++;
-			}
-			k++;
-			if (k == N)
-				break;
-		}
-		dfs(0, tree1, info);
-		if(result == Integer.MAX_VALUE) {
+	public static int solution(int info[][], int n, int m){
+		N = n;
+		R = info.length;
+		M = m;
+		A = info.clone();
+		NM[0] += A[0][0];
+		DFS(A[0][0]);
+		selected = new ArrayList<>(); index = 0;
+		NM = new int[2];
+		NM[1] += A[0][1];
+		DFS(A[0][1]);
+		if(answer == Integer.MAX_VALUE) {
 			return -1;
 		}
-		return result;
+		return answer;
 	}
 }
